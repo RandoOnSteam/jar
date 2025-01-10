@@ -193,7 +193,7 @@ typedef struct {
     mint    stereo_separation;
     mint    bits;
     mint    filter;
-    
+
     muchar *modfile; // the raw mod file
     mulong  modfilesize;
     muint   loopcount;
@@ -1087,7 +1087,7 @@ bool jar_mod_setcfg(jar_mod_context_t * modctx, int samplerate, int bits, int st
             modctx->stereo = 1;
         else
             modctx->stereo = 0;
-            
+
         if(stereo_separation < 4)
         {
             modctx->stereo_separation = stereo_separation;
@@ -1119,8 +1119,8 @@ static bool jar_mod_load( jar_mod_context_t * modctx, void * mod_data, int mod_d
 
     modmemory = (unsigned char *)mod_data;
     endmodmemory = modmemory + mod_data_size;
-    
-    
+
+
 
     if(modmemory)
     {
@@ -1492,7 +1492,7 @@ static bool jar_mod_reset( jar_mod_context_t * modctx)
         modctx->mod_loaded = 0;
         modctx->last_r_sample = 0;
         modctx->last_l_sample = 0;
-        
+
         return jar_mod_init(modctx);
     }
     return 0;
@@ -1523,22 +1523,22 @@ mulong jar_mod_load_file(jar_mod_context_t * modctx, const char* filename)
         free(modctx->modfile);
         modctx->modfile = 0;
     }
-    
+
     FILE *f = fopen(filename, "rb");
     if(f)
     {
         fseek(f,0,SEEK_END);
         fsize = ftell(f);
         fseek(f,0,SEEK_SET);
-        
+
         if(fsize && fsize < 32*1024*1024)
         {
-            modctx->modfile = malloc(fsize);
+            modctx->modfile = (muchar*)malloc(fsize);
             modctx->modfilesize = fsize;
             memset(modctx->modfile, 0, fsize);
             fread(modctx->modfile, fsize, 1, f);
             fclose(f);
-            
+
             if(!jar_mod_load(modctx, (void*)modctx->modfile, fsize)) fsize = 0;
         } else fsize = 0;
     }
@@ -1549,7 +1549,7 @@ mulong jar_mod_current_samples(jar_mod_context_t * modctx)
 {
     if(modctx)
         return modctx->samplenb;
-    
+
     return 0;
 }
 
@@ -1559,13 +1559,13 @@ mulong jar_mod_max_samples(jar_mod_context_t * ctx)
     mint buff[2];
     mulong len;
     mulong lastcount = ctx->loopcount;
-    
+
     while(ctx->loopcount <= lastcount)
         jar_mod_fillbuffer(ctx, buff, 1, 0);
-    
+
     len = ctx->samplenb;
     jar_mod_seek_start(ctx);
-    
+
     return len;
 }
 
@@ -1577,7 +1577,7 @@ void jar_mod_seek_start(jar_mod_context_t * ctx)
         muchar* ftmp = ctx->modfile;
         mulong stmp = ctx->modfilesize;
         muint lcnt = ctx->loopcount;
-        
+
         if(jar_mod_reset(ctx)){
             jar_mod_load(ctx, ftmp, stmp);
             ctx->modfile = ftmp;
